@@ -392,6 +392,15 @@ class ACS1Client(ACSClient):
 class ACS1DpClient(ACS1Client):
     dataset = 'acs1/profile'
 
+class ACS1StClient(ACS1Client):
+    def _switch_endpoints(self, year):
+        self.endpoint_url = 'https://api.census.gov/data/%s/acs/%s'
+        self.definitions_url = 'https://api.census.gov/data/%s/acs/%s/variables.json'
+        self.definition_url = 'https://api.census.gov/data/%s/acs/%s/variables/%s.json'
+        self.groups_url = 'https://api.census.gov/data/%s/acs/%s/groups.json'
+
+    dataset = 'acs1/subject'
+
 
 class SF1Client(Client):
     default_year = 2010
@@ -529,6 +538,7 @@ class Census(object):
         self.acs5dp = ACS5DpClient(key, year, session)
         self.acs3dp = ACS3DpClient(key, year, session)
         self.acs1dp = ACS1DpClient(key, year, session)
+        self.acs1st = ACS1StClient(key, year, session)
         self.sf1 = SF1Client(key, year, session)
         self.pl = PLClient(key, year, session)
 
@@ -536,3 +546,10 @@ class Census(object):
     def acs(self):
         warnings.warn('Use acs5 instead of acs', DeprecationWarning)
         return self._acs
+
+
+
+if __name__ == '__main__':
+
+    c = Census('326f843501edf87e2ebf92236795857c10776068', 2022)
+    c.acs1st.state_county(('NAME', 'S0601_C01_047E'), 53, '*')
